@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Talk to Dr. Harley Sawyer</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #tv-screen {
+            width: 500px;
+            height: 350px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: 20px solid #111;
+            border-radius: 12px;
+            box-shadow: 0 0 60px rgba(0, 255, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: background-image 0.5s ease;
+        }
+
+        #tv-screen::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.03) 10px, rgba(255, 255, 255, 0.03) 20px);
+            opacity: 0.25;
+        }
+
+        .blink::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 40%;
+            width: 20%;
+            height: 10%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            animation: blink 5s infinite;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        @keyframes blink {
+
+            0%,
+            88% {
+                opacity: 0;
+            }
+
+            90% {
+                opacity: 1;
+                transform: scaleY(1.2);
+            }
+
+            92% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        #chat-area {
+            width: 90%;
+            max-width: 600px;
+            height: 220px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #111;
+            border: 2px solid #0f0;
+            border-radius: 8px;
+            overflow-y: auto;
+            font-size: 1.1em;
+        }
+
+        #input-area {
+            display: flex;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.2em;
+            background: #000;
+            color: #0f0;
+            border: 2px solid #0f0;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: #0f0;
+            color: #000;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0f8;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="tv-screen" class="blink"></div>
+
+    <div id="chat-area">Doctor: My name is Harley Sawyer. I'm called 'The Doctor'. My brain is listening... say
+        anything, little germ.</div>
+
+    <div id="input-area">
+        <input type="text" id="userInput" placeholder="Say anything..." autofocus />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        const tv = document.getElementById('tv-screen');
+        const chatArea = document.getElementById('chat-area');
+        const input = document.getElementById('userInput');
+
+        function addMessage(text, fromUser = false) {
+            const msg = document.createElement('div');
+            msg.textContent = (fromUser ? 'You: ' : 'Doctor: ') + text;
+            msg.style.margin = '8px 0';
+            msg.style.color = fromUser ? '#0f8' : '#0f0';
+            chatArea.appendChild(msg);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function updateEye(emotion) {
+            tv.style.backgroundSize = 'cover';
+            tv.style.backgroundPosition = 'center';
+            tv.style.backgroundRepeat = 'no-repeat';
+
+            // Your URLs - normal and satisfied use the same GIF you gave
+            const eyeUrl = 'https://media.tenor.com/h_67OsHI3boAAAAM/the-doctor-the-doctor-poppy-playtime.gif';
+
+            if (emotion === 'normal' || emotion === 'satisfied') {
+                tv.style.backgroundImage = "url('" + eyeUrl + "')";
+            } else if (emotion === 'angry') {
+                tv.style.backgroundImage = "url('https://tr.rbxcdn.com/180DAY-ba34c29b8cb4583a0c574e04526de829/420/420/Hat/Webp/noFilter')";
+            }
+        }
+
+        function speak(text, angry = false) {
+            const u = new SpeechSynthesisUtterance(text);
+            u.rate = angry ? 1.0 : 0.75;
+            u.pitch = angry ? 0.6 : 0.7;
+            u.volume = angry ? 1.0 : 0.9;
+            speechSynthesis.speak(u);
+        }
+
+        function getBrainResponse(msg) {
+            const lower = msg.toLowerCase();
+            let emotion = 'normal';
+            let angry = false;
+
+            if (lower.includes('mad') || lower.includes('angry') || lower.includes('hate') || lower.includes('fuck') || lower.includes('shit') || lower.includes('stupid') || lower.includes('no') || lower.includes('stop') || lower.includes('gay') || lower.includes('idiot')) {
+                emotion = 'angry';
+                angry = true;
+            } else if (lower.includes('good') || lower.includes('yes') || lower.includes('sorry') || lower.includes('please') || lower.includes('thank') || lower.includes('nice') || lower.includes('love') || lower.includes('cool') || lower.includes('best')) {
+                emotion = 'satisfied';
+            } else {
+                emotion = 'normal';
+            }
+
+            updateEye(emotion);
+
+            const normalReplies = [
+                "Your voice drifts into my preserved mind... so weak, so fleeting. Tell me more.",
+                "Fascinating. My brain is dissecting every word you speak.",
+                "Continue. I have eternity... you have only moments left.",
+                "You think you can surprise a brain that has seen everything?",
+                "The factory remembers. What do you want from it?"
+            ];
+
+            const angryReplies = [
+                "You dare speak to me like that? My rage is rising — you will regret every breath you take.",
+                "Insolent creature! Red floods my vision now. I will tear your mind apart slowly.",
+                "Anger surges through my brain. You have no idea the mistake you just made.",
+                "My patience is dead. You will learn suffering.",
+                "You think words can hurt me? I will return them tenfold."
+            ];
+
+            const satisfiedReplies = [
+                "Mmm... good. My brain approves this obedience. You are learning your place.",
+                "Yes... exactly. Submission is beautiful. Keep speaking like this and I might stay pleased.",
+                "Well done. You please me... for now. Continue.",
+                "Ah, such sweet compliance. My mind savors every syllable.",
+                "Obedience... rare and exquisite. You are becoming interesting to me."
+            ];
+
+            let replies = normalReplies;
+            if (emotion === 'angry') replies = angryReplies;
+            if (emotion === 'satisfied') replies = satisfiedReplies;
+
+            const reply = replies[Math.floor(Math.random() * replies.length)];
+            speak(reply, angry);
+            return reply;
+        }
+
+        function sendMessage() {
+            const msg = input.value.trim();
+            if (!msg) return;
+            addMessage(msg, true);
+            input.value = '';
+
+            const reply = getBrainResponse(msg);
+            setTimeout(() => addMessage(reply), 800);
+        }
+
+        input.addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Start with normal eye (your new URL)
+        updateEye('normal');
+    </script>
+</body>
+
+</html>
